@@ -1,8 +1,11 @@
+use dotenv::dotenv;
 use reqwest::{Client, header};
 use std::env;
 use std::error::Error;
 
 pub async fn send_request(prompt: &str) -> Result<String, Box<dyn Error>> {
+    dotenv().ok(); // Load .env file
+
     let api_key = env::var("GEMINI_API_KEY")?;
 
     let mut headers = header::HeaderMap::new();
@@ -25,4 +28,14 @@ pub async fn send_request(prompt: &str) -> Result<String, Box<dyn Error>> {
         .await?;
 
     Ok(response)
+}
+#[cfg(test)]
+mod test {
+    use super::*;
+    use tokio;
+    #[tokio::test]
+    async fn testing_call() {
+        let abc = send_request("Is this working?").await.unwrap();
+        println!("{:#?}", abc);
+    }
 }
