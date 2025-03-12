@@ -45,10 +45,15 @@ pub async fn send_request(prompt: &str) -> Result<String, Box<dyn Error>> {
         })?;
 
     let status = response.status();
-    let response_text = response.text().await.map_err(|e| {
-        eprintln!("Failed to read response text: {}", e);
-        Box::new(e) as Box<dyn Error>
-    })?;
+    let response_text = response
+        .text()
+        .await
+        .map_err(|e| {
+            eprintln!("Failed to read response text: {}", e);
+            Box::new(e) as Box<dyn Error>
+        })?
+        .trim()
+        .to_string();
 
     if !status.is_success() {
         eprintln!("API responded with error: {}", response_text);
