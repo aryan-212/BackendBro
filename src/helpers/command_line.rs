@@ -2,42 +2,69 @@ use crossterm::{
     ExecutableCommand,
     style::{Color, ResetColor, SetForegroundColor},
 };
-use std::io::{stdin, stdout};
+use std::io::{Write, stdin, stdout};
+
 #[derive(PartialEq, Debug)]
 pub enum PrintCommand {
     AICall,
     UnitTest,
     Issue,
 }
+
 impl PrintCommand {
-    pub fn print_agent_message(&self, agent_pos: &str, agent_statement: &str) {
-        let mut stdout: std::io::Stdout = stdout();
+    pub fn print_agent_message(&self, agent_pos: &str, agent_statement: &str) -> String {
+        let mut stdout = stdout();
+
         // Decide on the print color
-        let statement_color: Color = match self {
+        let statement_color = match self {
             Self::AICall => Color::Cyan,
             Self::UnitTest => Color::Magenta,
             Self::Issue => Color::Red,
         };
-        // Print the agent statement in a specific color
+
+        // Print the agent position in green
         stdout.execute(SetForegroundColor(Color::Green)).unwrap();
-        print!("Agent :{}", agent_pos);
-        // Reset Color
+        print!("Agent {}: ", agent_pos);
+
+        // Set statement color
         stdout.execute(SetForegroundColor(statement_color)).unwrap();
+        println!("{}", agent_statement);
+
+        // Reset color
         stdout.execute(ResetColor).unwrap();
+        let mut user_response = String::new();
+        stdin()
+            .read_line(&mut user_response)
+            .expect("Failed to read response");
+
+        user_response.trim().to_string()
     }
 }
+
 pub fn get_user_response(question: &str) -> String {
-    let mut stdout: std::io::Stdout = stdout();
-    //Print the question in a specific color
+    let mut stdout = stdout();
+
+    // Print the question in blue
     stdout.execute(SetForegroundColor(Color::Blue)).unwrap();
-    println!("");
     println!("{}", question);
+
     // Reset color
     stdout.execute(ResetColor).unwrap();
+
     // Read user input
     let mut user_response = String::new();
+    print!("> "); // Prompt symbol
+    stdout.flush().unwrap();
     stdin()
         .read_line(&mut user_response)
         .expect("Failed to read response");
+
     user_response.trim().to_string()
+}
+mod tests {
+    use super::*;
+    #[test]
+    fn tests_prints_agent_msg() {
+        PrintCommand::AICall.print_agent_message("Managing Agent", "It's processing something");
+    }
 }
