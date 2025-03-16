@@ -1,6 +1,8 @@
 use super::command_line::PrintCommand;
 use crate::{
-    ai_functions::ai_func_managing::convert_user_input_to_goal,
+    ai_functions::{
+        ai_func_architect::print_project_scope, ai_func_managing::convert_user_input_to_goal,
+    },
     models::general::llm::{self, send_request},
 };
 pub fn extend_ai_function(ai_func: fn(&str) -> &'static str, func_input: &str) -> String {
@@ -34,6 +36,7 @@ pub async fn ai_task_request(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ai_functions::ai_func_architect::print_project_scope;
     use crate::ai_functions::ai_func_managing::convert_user_input_to_goal;
     #[test]
     fn tests_extending_ai_function() {
@@ -45,7 +48,7 @@ mod tests {
 }
 #[tokio::test]
 async fn tests_ai_task_request() {
-    let ai_func_param = "return me the current time and date and place".to_string();
+    let ai_func_param = "display btc prices".to_string();
     let res = ai_task_request(
         ai_func_param,
         "Managing Agent",
@@ -53,7 +56,14 @@ async fn tests_ai_task_request() {
         convert_user_input_to_goal,
     )
     .await;
-    dbg!(res);
+    let res2 = ai_task_request(
+        res.clone(),
+        "Solutions Architect",
+        "Finding Project Scope",
+        print_project_scope,
+    )
+    .await;
+    dbg!(res2);
 }
 #[test]
 fn tests_convert_user_input_to_goal() {
