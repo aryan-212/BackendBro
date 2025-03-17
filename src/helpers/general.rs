@@ -76,7 +76,7 @@ async fn tests_ai_task_request() {
         convert_user_input_to_goal,
     )
     .await;
-    let res2 = ai_task_request(
+    let res2 = ai_task_request_decoded(
         res.clone(),
         "Solutions Architect",
         "Finding Project Scope",
