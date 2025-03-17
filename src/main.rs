@@ -24,5 +24,5 @@ async fn main() {
         print_project_scope,
     )
     .await;
-    dbg!(res2);
+    println!("{:#?}", res2);
 }

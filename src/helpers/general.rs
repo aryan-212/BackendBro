@@ -32,6 +32,26 @@ pub async fn ai_task_request(
     };
     llm_response
 }
+pub async fn ai_task_request_decoded(
+    msg_context: String,
+    agent_position: &str,
+    agent_operation: &str,
+    function_pass: for<'a> fn(&str) -> &'static str,
+) -> String {
+    let extended_msg = extend_ai_function(function_pass, &msg_context);
+    // Print current status
+    PrintCommand::AICall.print_agent_message(agent_position, agent_operation);
+    // Get agent response
+    let llm_response = match send_request(&extended_msg).await {
+        Ok(response) => response,
+        Err(_) => send_request(&msg_context)
+            .await
+            .expect("Failed to call Gemini"),
+    };
+    let decoded_response =
+        serde_json::from_str(llm_response.as_str()).expect("Failed to decode AI response");
+    decoded_response
+}
 
 #[cfg(test)]
 mod tests {
