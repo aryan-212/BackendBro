@@ -5,6 +5,25 @@ use crate::{
     },
     models::general::llm::{self, send_request},
 };
+use reqwest::Client;
+use std::fs;
+const CODE_TEMPLATE_PATH: &str = "/home/aryan/BackendBro/web_template/src/code_template.rs";
+const EXEC_MAIN_PATH: &str = "/home/aryan/BackendBro/web_template/src/main.rs";
+const API_SCHEMA_PATH: &str = "/home/aryan/BackendBro/schemas/api_schema.json";
+// Get Code Template
+pub fn read_code_to_template_contents() {
+    let path: String = String::from(CODE_TEMPLATE_PATH);
+    fs::read_to_string(path).expect("Something went wrong, failed to read template");
+}
+//save new backend code
+pub fn save_backend_code(contents: &String) {
+    let path: String = String::from(EXEC_MAIN_PATH);
+    fs::write(path, contents).expect("Failed to write a main.rs");
+}
+pub fn save_api_endpoints(api_endpoint: &String) {
+    let path = String::from(EXEC_MAIN_PATH);
+    fs::write(path, api_endpoint).expect("Could'nt write to file");
+}
 pub fn extend_ai_function(ai_func: fn(&str) -> &'static str, func_input: &str) -> String {
     let ai_function_str = ai_func(func_input);
     format!(
@@ -52,7 +71,17 @@ pub async fn ai_task_request_decoded(
         serde_json::from_str(llm_response.as_str()).expect("Failed to decode AI response");
     decoded_response
 }
-
+pub async fn check_status_code(client: &Client, url: &str) -> Result<u16, reqwest::Error> {
+    let response = client.get(url).send().await?;
+    Ok(response.status().as_u16())
+}
+// Get Code Template
+pub fn read_code_template_contents() -> String {
+    let path = String::from(CODE_TEMPLATE_PATH);
+    fs::read_to_string(path).expect("Failed to read code template")
+}
+// Save New Backend Code
+// Save JSON API Endpoint Schema
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -85,6 +114,7 @@ async fn tests_ai_task_request() {
     .await;
     dbg!(res2);
 }
+
 #[test]
 fn tests_convert_user_input_to_goal() {
     let user_input = "Build me a web site for making stock price api requests";

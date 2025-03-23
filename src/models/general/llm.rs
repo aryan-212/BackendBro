@@ -91,7 +91,7 @@ mod test {
     #[tokio::test]
     async fn testing_call() {
         match send_request("Is this working?").await {
-            Ok(response) => println!("{:#?}", response),
+            Ok(response) => println!("{:#?}", response.trim_end()),
             Err(e) => eprintln!("Test failed with error: {}", e),
         }
     }
