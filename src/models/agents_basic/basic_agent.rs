@@ -1,5 +1,5 @@
 use super::basic_trait;
-use crate::models::agents_basic::basic_trait::BasicTraits;
+pub use crate::models::agents_basic::basic_trait::BasicTraits;
 #[derive(Debug, PartialEq)]
 pub enum AgentState {
     Discovery,

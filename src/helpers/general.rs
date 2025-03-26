@@ -3,27 +3,32 @@ use crate::{
     ai_functions::{
         ai_func_architect::print_project_scope, ai_func_managing::convert_user_input_to_goal,
     },
-    models::general::llm::{self, send_request},
+    models::{
+        agents::agents_traits::ProjectScope,
+        general::llm::{self, send_request},
+    },
 };
 use reqwest::Client;
+use serde::de::DeserializeOwned;
 use std::fs;
 const CODE_TEMPLATE_PATH: &str = "/home/aryan/BackendBro/web_template/src/code_template.rs";
 const EXEC_MAIN_PATH: &str = "/home/aryan/BackendBro/web_template/src/main.rs";
 const API_SCHEMA_PATH: &str = "/home/aryan/BackendBro/schemas/api_schema.json";
+
 // Get Code Template
-pub fn read_code_to_template_contents() {
-    let path: String = String::from(CODE_TEMPLATE_PATH);
-    fs::read_to_string(path).expect("Something went wrong, failed to read template");
+pub fn read_code_to_template_contents() -> String {
+    fs::read_to_string(CODE_TEMPLATE_PATH).expect("Something went wrong, failed to read template")
 }
-//save new backend code
-pub fn save_backend_code(contents: &String) {
-    let path: String = String::from(EXEC_MAIN_PATH);
-    fs::write(path, contents).expect("Failed to write a main.rs");
+
+// Save new backend code
+pub fn save_backend_code(contents: &str) {
+    fs::write(EXEC_MAIN_PATH, contents).expect("Failed to write main.rs");
 }
-pub fn save_api_endpoints(api_endpoint: &String) {
-    let path = String::from(EXEC_MAIN_PATH);
-    fs::write(path, api_endpoint).expect("Could'nt write to file");
+
+pub fn save_api_endpoints(api_endpoint: &str) {
+    fs::write(EXEC_MAIN_PATH, api_endpoint).expect("Couldn't write to file");
 }
+
 pub fn extend_ai_function(ai_func: fn(&str) -> &'static str, func_input: &str) -> String {
     let ai_function_str = ai_func(func_input);
     format!(
@@ -31,93 +36,86 @@ pub fn extend_ai_function(ai_func: fn(&str) -> &'static str, func_input: &str) -
         You ONLY print the results of functions. Nothing else. No commentary. \
         Here is the input to the function: {}. Print out what the function will return.",
         ai_function_str, func_input
-    ) // Return String instead of &'static str
+    )
 }
+
 pub async fn ai_task_request(
     msg_context: String,
     agent_position: &str,
     agent_operation: &str,
-    function_pass: for<'a> fn(&str) -> &'static str,
+    function_pass: fn(&str) -> &'static str,
 ) -> String {
     let extended_msg = extend_ai_function(function_pass, &msg_context);
-    // Print current status
     PrintCommand::AICall.print_agent_message(agent_position, agent_operation);
-    // Get agent response
-    let llm_response = match send_request(&extended_msg).await {
+
+    match send_request(&extended_msg).await {
         Ok(response) => response,
-        Err(e) => send_request(&msg_context)
-            .await
-            .expect("Failed to call Gemini"),
-    };
-    llm_response
+        Err(_) => match send_request(&msg_context).await {
+            Ok(fallback_response) => fallback_response,
+            Err(e) => {
+                eprintln!("Failed to call Gemini: {}", e);
+                String::from("AI service unavailable")
+            }
+        },
+    }
 }
-pub async fn ai_task_request_decoded(
+pub async fn ai_task_request_decoded<T: DeserializeOwned>(
     msg_context: String,
     agent_position: &str,
     agent_operation: &str,
-    function_pass: for<'a> fn(&str) -> &'static str,
-) -> String {
-    let extended_msg = extend_ai_function(function_pass, &msg_context);
-    // Print current status
-    PrintCommand::AICall.print_agent_message(agent_position, agent_operation);
-    // Get agent response
-    let llm_response = match send_request(&extended_msg).await {
-        Ok(response) => response,
-        Err(_) => send_request(&msg_context)
-            .await
-            .expect("Failed to call Gemini"),
-    };
-    let decoded_response =
-        serde_json::from_str(llm_response.as_str()).expect("Failed to decode AI response");
-    decoded_response
+    function_pass: fn(&str) -> &'static str,
+) -> T {
+    let llm_response =
+        ai_task_request(msg_context, agent_position, agent_operation, function_pass).await;
+    serde_json::from_str::<T>(&llm_response).expect("Failed to decode AI response from serde_json")
 }
+
 pub async fn check_status_code(client: &Client, url: &str) -> Result<u16, reqwest::Error> {
     let response = client.get(url).send().await?;
     Ok(response.status().as_u16())
 }
-// Get Code Template
+
 pub fn read_code_template_contents() -> String {
-    let path = String::from(CODE_TEMPLATE_PATH);
-    fs::read_to_string(path).expect("Failed to read code template")
+    fs::read_to_string(CODE_TEMPLATE_PATH).expect("Failed to read code template")
 }
-// Save New Backend Code
-// Save JSON API Endpoint Schema
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::ai_functions::ai_func_architect::print_project_scope;
     use crate::ai_functions::ai_func_managing::convert_user_input_to_goal;
+    use crate::models::agents::agents_traits::ProjectScope;
+
     #[test]
     fn tests_extending_ai_function() {
-        // let x_str = convert_user_input_to_goal("dummy variable");
-        // dbg!(x_str);
         let mssg = extend_ai_function(convert_user_input_to_goal, "dummy variable");
-        println!("{mssg}");
+        println!("{}", mssg);
     }
-}
-#[tokio::test]
-async fn tests_ai_task_request() {
-    let ai_func_param = "display btc prices".to_string();
-    let res = ai_task_request(
-        ai_func_param,
-        "Managing Agent",
-        "Defining user requirements",
-        convert_user_input_to_goal,
-    )
-    .await;
-    let res2 = ai_task_request_decoded(
-        res.clone(),
-        "Solutions Architect",
-        "Finding Project Scope",
-        print_project_scope,
-    )
-    .await;
-    dbg!(res2);
-}
 
-#[test]
-fn tests_convert_user_input_to_goal() {
-    let user_input = "Build me a web site for making stock price api requests";
-    let result = convert_user_input_to_goal(user_input);
-    println!("{}", result);
+    #[tokio::test]
+    async fn tests_ai_task_request() {
+        let ai_func_param = "display btc prices".to_string();
+        let res = ai_task_request(
+            ai_func_param,
+            "Managing Agent",
+            "Defining user requirements",
+            convert_user_input_to_goal,
+        )
+        .await;
+        let res2: ProjectScope = ai_task_request_decoded::<ProjectScope>(
+            res.clone(),
+            "Solutions Architect",
+            "Finding Project Scope",
+            print_project_scope,
+        )
+        .await;
+        dbg!(res2);
+    }
+
+    #[test]
+    fn tests_convert_user_input_to_goal() {
+        let user_input = "Build me a web site for making stock price API requests";
+        let result = convert_user_input_to_goal(user_input);
+        println!("{}", result);
+    }
 }

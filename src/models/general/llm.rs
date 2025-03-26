@@ -5,12 +5,12 @@ use serde_json::Value;
 use std::env;
 use std::error::Error;
 
-pub async fn send_request(prompt: &str) -> Result<String, Box<dyn Error>> {
+pub async fn send_request(prompt: &str) -> Result<String, Box<dyn Error + Send>> {
     dotenv().ok(); // Load .env file
 
     let api_key = env::var("GEMINI_API_KEY").map_err(|e| {
         eprintln!("Failed to get API key: {}", e);
-        Box::new(e) as Box<dyn Error>
+        Box::new(e) as Box<dyn Error + Send>
     })?;
 
     let mut headers = HeaderMap::new();
@@ -41,7 +41,7 @@ pub async fn send_request(prompt: &str) -> Result<String, Box<dyn Error>> {
         .await
         .map_err(|e| {
             eprintln!("Request failed: {}", e);
-            Box::new(e) as Box<dyn Error>
+            Box::new(e) as Box<dyn Error + Send>
         })?;
 
     let status = response.status();
@@ -50,7 +50,7 @@ pub async fn send_request(prompt: &str) -> Result<String, Box<dyn Error>> {
         .await
         .map_err(|e| {
             eprintln!("Failed to read response text: {}", e);
-            Box::new(e) as Box<dyn Error>
+            Box::new(e) as Box<dyn Error + Send>
         })?
         .trim()
         .to_string();
@@ -65,7 +65,7 @@ pub async fn send_request(prompt: &str) -> Result<String, Box<dyn Error>> {
 
     let parsed: Value = serde_json::from_str(&response_text).map_err(|e| {
         eprintln!("Failed to parse JSON: {}", e);
-        Box::new(e) as Box<dyn Error>
+        Box::new(e) as Box<dyn Error + Send>
     })?;
 
     if let Some(text) = parsed["candidates"]
@@ -91,7 +91,7 @@ mod test {
     #[tokio::test]
     async fn testing_call() {
         match send_request("Is this working?").await {
-            Ok(response) => println!("{:#?}", response.trim_end()),
+            Ok(response) => println!("{:#?}", response),
             Err(e) => eprintln!("Test failed with error: {}", e),
         }
     }

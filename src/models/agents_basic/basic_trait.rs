@@ -1,4 +1,4 @@
-use crate::models::agents_basic::basic_agent::AgentState;
+pub use crate::models::agents_basic::basic_agent::AgentState;
 pub trait BasicTraits {
     fn new(objective: String, position: String) -> Self;
     fn update_state(&mut self, new_state: AgentState);

@@ -4,14 +4,14 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-ai_functions = "0.1.1"
-async-trait = "0.1.87"
-crossterm = "0.28.1"
 dotenv = "0.15.0"
-reqwest = { version = "0.12.12", features = ["json"] }
-serde = { version = "1.0.218", features = ["derive"] }
-serde_json = "1.0.140"
-strum = "0.27.1"
-strum_macros = "0.27.1"
-tokio = { version = "1.43.0", features = ["full"] }
-webbrowser = "1.0.3"
+reqwest = { version = "0.11.17", features = ["json"] }
+serde = { version = "1.0.160", features = ["derive"] }
+serde_json = "1.0.96"
+tokio = { version = "1.28.0", features = ["full"] }
+crossterm = "0.26.1"
+async-trait = "0.1.27"
+webbrowser = "0.8.9"
+strum = "0.24.1"
+strum_macros = "0.24.3"
+ai_functions = "0.1.1"
