@@ -161,12 +161,14 @@ mod tests {
         let mut agent: AgentSolutionArchitect = AgentSolutionArchitect::new();
 
         let mut factsheet: FactSheet = FactSheet {
-      project_description: "Build a full stack website with user login and logout that shows latest Forex prices".to_string(),
-      project_scope: None,
-      external_urls: None,
-      backend_code: None,
-      api_endpoint_schema: None,
-    };
+            project_description:
+                "Build a full stack website that shows the time of all the asian countries"
+                    .to_string(),
+            project_scope: None,
+            external_urls: None,
+            backend_code: None,
+            api_endpoint_schema: None,
+        };
 
         agent
             .execute(&mut factsheet)

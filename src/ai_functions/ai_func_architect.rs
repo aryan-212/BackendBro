@@ -12,6 +12,7 @@ pub fn print_project_scope(_project_description: &str) {
     ///     "is_user_login_and_logout": bool // true if site needs users to be able to log in and log out
     ///     "is_external_urls_required": bool // true if site needs to fetch data from third part providers
     ///   }
+    /// DONT FORGET TO PUT THE COMMAS IN THE JSON OUTPUT !!
     /// Example 1:
     ///   user_request = "I need a full stack website that accepts users and gets stock price data"
     ///   prints:
