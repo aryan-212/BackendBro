@@ -36,8 +36,9 @@ pub fn print_project_scope(_project_description: &str) {
 pub fn print_site_urls(_project_description: &str) {
     /// Input: Takes in a project description of a website build
     /// Function: Outputs a list of external public API endpoints that should be used in the building of the website
-    /// Important: Only selects url endpoint(s) which do not require any API Keys at all
-    /// Output: Prints a list response of external urls in the following format:
+    /// Important: Only selects url endpoint(s) which do not require any API Keys at all and are
+    /// completely free to use
+    /// Output: Prints a list response of external urls that dont require an API-KEY and works in the following format:
     /// ["url1", "url2", "url3", ...]
     /// Example:
     ///   website_team_spec = "website_purpose: Some("\"Provides Crypto Price Data from Binance and Kraken\"",)"

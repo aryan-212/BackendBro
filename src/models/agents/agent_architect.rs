@@ -33,7 +33,7 @@ impl AgentSolutionArchitect {
     async fn call_project_scope(&mut self, factsheet: &mut FactSheet) -> ProjectScope {
         let msg_context: String = format!("{}", factsheet.project_description);
 
-        let ai_response: ProjectScope = ai_task_request_decoded::<ProjectScope>(
+        let project_scope: ProjectScope = ai_task_request_decoded::<ProjectScope>(
             msg_context,
             &self.attributes.position,
             get_function_string!(print_project_scope),
@@ -41,9 +41,9 @@ impl AgentSolutionArchitect {
         )
         .await;
 
-        factsheet.project_scope = Some(ai_response.clone());
+        factsheet.project_scope = Some(project_scope.clone());
         self.attributes.update_state(AgentState::Finished);
-        return ai_response;
+        project_scope
     }
 
     // Retrieve Project Scope
@@ -161,9 +161,7 @@ mod tests {
         let mut agent: AgentSolutionArchitect = AgentSolutionArchitect::new();
 
         let mut factsheet: FactSheet = FactSheet {
-            project_description:
-                "Build a full stack website that shows the time of all the asian countries"
-                    .to_string(),
+            project_description: "Build a full stack website that shows me sports news".to_string(),
             project_scope: None,
             external_urls: None,
             backend_code: None,

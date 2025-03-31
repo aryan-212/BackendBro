@@ -19,6 +19,9 @@ const API_SCHEMA_PATH: &str = "/home/aryan/BackendBro/schemas/api_schema.json";
 pub fn read_code_to_template_contents() -> String {
     fs::read_to_string(CODE_TEMPLATE_PATH).expect("Something went wrong, failed to read template")
 }
+pub fn read_exec_main_contents() -> String {
+    fs::read_to_string(EXEC_MAIN_PATH).expect("Something went wrong, failed to read template")
+}
 
 // Save new backend code
 pub fn save_backend_code(contents: &str) {
