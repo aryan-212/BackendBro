@@ -22,10 +22,27 @@ pub fn read_code_to_template_contents() -> String {
 pub fn read_exec_main_contents() -> String {
     fs::read_to_string(EXEC_MAIN_PATH).expect("Something went wrong, failed to read template")
 }
+fn extract_code_block(input: String) -> Option<String> {
+    // Find the first set of triple backticks (```).
+    if let Some(start) = input.find("```") {
+        // Find the second set of triple backticks (```), after the first one.
+        if let Some(end) = input[start + 3..].find("```") {
+            // Extract the content between the two sets of backticks.
+            let code_block = &input[start + 3 + 4..start + 3 + end]; // Skip over "rust" or any language identifier
+            return Some(code_block.to_string());
+        }
+    }
 
-// Save new backend code
+    // Return None if no code block is found
+    None
+}
 pub fn save_backend_code(contents: &str) {
-    fs::write(EXEC_MAIN_PATH, contents).expect("Failed to write main.rs");
+    let parsed_code = extract_code_block(contents.to_string());
+    if let Some(code) = parsed_code {
+        fs::write(EXEC_MAIN_PATH, code).expect("Failed to write main.rs");
+    } else {
+        println!("Cannot parse the code");
+    }
 }
 
 pub fn save_api_endpoints(api_endpoint: &str) {
@@ -70,7 +87,7 @@ pub async fn ai_task_request_decoded<T: DeserializeOwned>(
 ) -> T {
     let llm_response =
         ai_task_request(msg_context, agent_position, agent_operation, function_pass).await;
-    // println!("{}", llm_response);
+    println!("{}", llm_response);
     serde_json::from_str::<T>(&llm_response).expect("Failed to decode AI response from serde_json")
 }
 
