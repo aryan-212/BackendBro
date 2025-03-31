@@ -11,9 +11,10 @@ use crate::{
 use reqwest::Client;
 use serde::de::DeserializeOwned;
 use std::fs;
-const CODE_TEMPLATE_PATH: &str = "/home/aryan/BackendBro/web_template/src/code_template.rs";
-const EXEC_MAIN_PATH: &str = "/home/aryan/BackendBro/web_template/src/main.rs";
-const API_SCHEMA_PATH: &str = "/home/aryan/BackendBro/schemas/api_schema.json";
+pub const CODE_TEMPLATE_PATH: &str = "/home/aryan/BackendBro/web_template/src/code_template.rs";
+pub const WEB_TEMPLATE_PATH: &str = "/home/aryan/BackendBro/web_template";
+pub const EXEC_MAIN_PATH: &str = "/home/aryan/BackendBro/web_template/src/main.rs";
+pub const API_SCHEMA_PATH: &str = "/home/aryan/BackendBro/schemas/api_schema.json";
 
 // Get Code Template
 pub fn read_code_to_template_contents() -> String {
@@ -41,7 +42,7 @@ pub fn save_backend_code(contents: &str) {
     if let Some(code) = parsed_code {
         fs::write(EXEC_MAIN_PATH, code).expect("Failed to write main.rs");
     } else {
-        println!("Cannot parse the code");
+        eprintln!("Cannot parse the code");
     }
 }
 

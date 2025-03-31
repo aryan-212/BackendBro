@@ -3,17 +3,18 @@ use crate::ai_functions::ai_func_backend::{
     print_rest_api_endpoints,
 };
 use crate::helpers::general::{
-    check_status_code, read_code_template_contents, read_exec_main_contents,
+    WEB_TEMPLATE_PATH, check_status_code, read_code_template_contents, read_exec_main_contents,
 };
 use crate::{ai_task_request_decoded, save_backend_code};
 
-use crate::helpers::command_line::PrintCommand;
+use crate::helpers::command_line::{PrintCommand, confirm_safe_code};
 use crate::helpers::general::ai_task_request;
 use crate::models::agents::agents_traits::{FactSheet, RouteObject, SpecialFunctions};
 use crate::models::agents_basic::basic_agent::{AgentState, BasicAgent};
 
 use async_trait::async_trait;
 use crossterm::cursor::position;
+use crossterm::style::Print;
 use reqwest::Client;
 use std::process::{Command, Stdio};
 use std::time::Duration;
@@ -55,7 +56,6 @@ impl AgentBackendDeveloper {
             print_backend_webserver_code,
         )
         .await;
-        println!("-----------WE ARE HERE---------------");
         dbg!(&ai_response);
         save_backend_code(&ai_response);
         factsheet.backend_code = Some(ai_response);
@@ -136,6 +136,26 @@ impl SpecialFunctions for AgentBackendDeveloper {
                 }
                 AgentState::UnitTesting => {
                     // Here you might want to perform some unit testing actions
+                    PrintCommand::UnitTest.print_agent_message(
+                        self.attributes.position.as_str(),
+                        "Backend Code Unit Testing : Requesting User Input",
+                    );
+                    let is_safe_code = confirm_safe_code();
+                    if !is_safe_code {
+                        panic!("Better go work on some AI alignment");
+                    }
+                    // Build and test code
+                    PrintCommand::UnitTest.print_agent_message(
+                        self.attributes.position.as_str(),
+                        "Backend Code Unit Testing: Building Agent",
+                    );
+                    let build_backend_server = Command::new("cargo")
+                        .arg("build")
+                        .current_dir(WEB_TEMPLATE_PATH)
+                        .stdout(Stdio::piped())
+                        .stderr(Stdio::piped())
+                        .output()
+                        .expect("Failed to run Backend Application");
                     self.attributes.state = AgentState::Finished;
                 }
                 _ => {
