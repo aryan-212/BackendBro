@@ -48,13 +48,15 @@ impl AgentBackendDeveloper {
             "CODE TEMPLATE : {} \n  PROJECT_DESCRIPTION:{} \n",
             code_template_str, factsheet.project_description
         );
-        let ai_response = ai_task_request_decoded::<String>(
+        let ai_response = ai_task_request(
             msg_context,
             &self.attributes.position,
             get_function_string!(print_backend_webserver_code),
             print_backend_webserver_code,
         )
         .await;
+        println!("-----------WE ARE HERE---------------");
+        dbg!(&ai_response);
         save_backend_code(&ai_response);
         factsheet.backend_code = Some(ai_response);
     }
@@ -65,7 +67,7 @@ impl AgentBackendDeveloper {
             "CODE TEMPLATE : {:?} \n  PROJECT_DESCRIPTION:{:?} \n",
             code_template_str, factsheet.project_description
         );
-        let ai_response = ai_task_request_decoded::<String>(
+        let ai_response = ai_task_request(
             msg_context,
             &self.attributes.position,
             get_function_string!(print_backend_webserver_code),
@@ -83,7 +85,7 @@ impl AgentBackendDeveloper {
                 THIS FUNCTION ONLY OUTCPUTS CODE. JUST OUTPUT THE CODE",
             factsheet.backend_code, self.bug_errors
         );
-        let ai_response = ai_task_request_decoded::<String>(
+        let ai_response = ai_task_request(
             msg_context,
             &self.attributes.position,
             get_function_string!(print_fixed_code),
@@ -142,5 +144,32 @@ impl SpecialFunctions for AgentBackendDeveloper {
             }
         }
         Ok(())
+    }
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[tokio::test]
+    async fn tests_writing_backend_code() {
+        let mut agent = AgentBackendDeveloper::new();
+        let factsheet_str = r#"{
+    "project_description": "build a website that streams video.\n",
+    "project_scope": {
+        "is_crud_required": true,
+        "is_user_login_and_logout": false,
+        "is_external_urls_required": true
+    },
+    "external_urls": [
+        "https://api.dailymotion.com/videos?fields=id,title,thumbnail_url"
+    ],
+    "backend_code": null,
+    "api_endpoint_schema": null
+}"#;
+        let mut factsheet: FactSheet = serde_json::from_str(factsheet_str).unwrap();
+        dbg!(&factsheet);
+        agent
+            .execute(&mut factsheet)
+            .await
+            .expect("Failed to execute Backend Developer code");
     }
 }
