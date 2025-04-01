@@ -47,7 +47,7 @@ pub fn save_backend_code(contents: &str) {
 }
 
 pub fn save_api_endpoints(api_endpoint: &str) {
-    fs::write(EXEC_MAIN_PATH, api_endpoint).expect("Couldn't write to file");
+    fs::write(API_SCHEMA_PATH, api_endpoint).expect("Couldn't write to file");
 }
 
 pub fn extend_ai_function(ai_func: fn(&str) -> &'static str, func_input: &str) -> String {

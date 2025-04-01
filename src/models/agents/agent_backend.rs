@@ -1,3 +1,5 @@
+use std::{process::Command, thread, time::Duration};
+
 use crate::ai_functions::ai_func_backend::{
     print_backend_webserver_code, print_fixed_code, print_improved_webserver_code,
     print_rest_api_endpoints,
@@ -18,8 +20,7 @@ use async_trait::async_trait;
 use crossterm::cursor::position;
 use crossterm::style::Print;
 use reqwest::Client;
-use std::process::{Command, Stdio};
-use std::time::Duration;
+use std::process::Stdio;
 use tokio::time;
 
 use super::agents_traits::ProjectScope;
@@ -225,7 +226,6 @@ impl SpecialFunctions for AgentBackendDeveloper {
                         .current_dir(WEB_TEMPLATE_PATH)
                         .spawn()
                         .expect("Failed to run backend application");
-
                     // Let user know testing on server will take place soon
                     PrintCommand::UnitTest.print_agent_message(
                         self.attributes.position.as_str(),
@@ -264,6 +264,8 @@ impl SpecialFunctions for AgentBackendDeveloper {
                                         self.attributes.position.as_str(),
                                         err_msg.as_str(),
                                     );
+                                } else {
+                                    println!("The backend url : {} works", endpoint.route)
                                 }
                             }
                             Err(e) => {

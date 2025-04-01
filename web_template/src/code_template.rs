@@ -1,6 +1,6 @@
 use actix_cors::Cors;
 
-use actix_web::{App, HttpResponse, HttpServer, Responder, http::header, web};
+use actix_web::{http::header, web, App, HttpResponse, HttpServer, Responder};
 
 use serde::{Deserialize, Serialize};
 

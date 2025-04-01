@@ -42,6 +42,7 @@ pub fn print_site_urls(_project_description: &str) {
     /// completely free to use
     /// Output: Prints a list response of external urls that dont require an API-KEY and works in the following format:
     /// ["url1", "url2", "url3", ...]
+    /// Dont pull websites which DO NOT have "api" as a substring
     /// Example:
     ///   website_team_spec = "website_purpose: Some("\"Provides Crypto Price Data from Binance and Kraken\"",)"
     ///   prints:

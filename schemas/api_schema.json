@@ -1,0 +1,57 @@
+[
+  {
+    "route": "/song",
+    "is_route_dynamic": "false",
+    "method": "post",
+    "request_body": {
+      "id": "number",
+      "title": "string",
+      "artist": "string",
+      "rank": "number"
+    },
+    "response": "None"
+  },
+  {
+    "route": "/song",
+    "is_route_dynamic": "false",
+    "method": "get",
+    "request_body": "None",
+    "response": {
+      "id": "number",
+      "title": "string",
+      "artist": "string",
+      "rank": "number"
+    }
+  },
+  {
+    "route": "/song",
+    "is_route_dynamic": "false",
+    "method": "put",
+    "request_body": {
+      "id": "number",
+      "title": "string",
+      "artist": "string",
+      "rank": "number"
+    },
+    "response": "None"
+  },
+  {
+    "route": "/song/{id}",
+    "is_route_dynamic": "true",
+    "method": "get",
+    "request_body": "None",
+    "response": {
+      "id": "number",
+      "title": "string",
+      "artist": "string",
+      "rank": "number"
+    }
+  },
+  {
+    "route": "/song/{id}",
+    "is_route_dynamic": "true",
+    "method": "delete",
+    "request_body": "None",
+    "response": "None"
+  }
+]
