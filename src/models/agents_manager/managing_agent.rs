@@ -54,7 +54,7 @@ impl ManagingAgent {
             let agent_res: Result<(), Box<dyn std::error::Error>> =
                 agent.execute(&mut self.factsheet).await;
             let agent_info = agent.get_attributes_from_agent();
-            dbg!(agent_info);
+            // dbg!(agent_info);
         }
     }
 }

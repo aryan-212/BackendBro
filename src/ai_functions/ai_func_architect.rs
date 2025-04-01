@@ -35,8 +35,10 @@ pub fn print_project_scope(_project_description: &str) {
 #[ai_function]
 pub fn print_site_urls(_project_description: &str) {
     /// Input: Takes in a project description of a website build
-    /// Function: Outputs a list of external public API endpoints that should be used in the building of the website
-    /// Important: Only selects url endpoint(s) which do not require any API Keys at all and are
+    /// Function: Outputs a list of external public FREE API endpoints that should be used in the building of the website
+    /// Important: Only selects url endpoint(s) which do not require any API Keys OR THE USER TO
+    /// SIGN IN AND THEN OBTAIN EVEN IF ITS FREE. Only select those apis that don't require the
+    /// user to login and obtain API key.THIS IS THE HIGHEST PRIORITY
     /// completely free to use
     /// Output: Prints a list response of external urls that dont require an API-KEY and works in the following format:
     /// ["url1", "url2", "url3", ...]

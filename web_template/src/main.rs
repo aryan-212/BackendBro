@@ -1,23 +1,57 @@
 [
   {
-    "route": "/",
-    "is_route_dynamic": "false",
-    "method": "get",
-    "request_body": "None",
-    "response": "string"
-  },
-  {
-    "route": "/forex",
+    "route": "/pokemon",
     "is_route_dynamic": "false",
     "method": "post",
     "request_body": {
-      "from_currency": "string",
-      "to_currency": "string"
+      "id": "number",
+      "name": "string",
+      "type1": "string",
+      "type2": "string"
     },
+    "response": "None"
+  },
+  {
+    "route": "/pokemon",
+    "is_route_dynamic": "false",
+    "method": "get",
+    "request_body": "None",
     "response": {
-      "from_currency": "string",
-      "to_currency": "string",
-      "exchange_rate": "number"
+      "id": "number",
+      "name": "string",
+      "type1": "string",
+      "type2": "string"
     }
+  },
+  {
+    "route": "/pokemon",
+    "is_route_dynamic": "false",
+    "method": "put",
+    "request_body": {
+      "id": "number",
+      "name": "string",
+      "type1": "string",
+      "type2": "string"
+    },
+    "response": "None"
+  },
+  {
+    "route": "/pokemon/{id}",
+    "is_route_dynamic": "true",
+    "method": "get",
+    "request_body": "None",
+    "response": {
+      "id": "number",
+      "name": "string",
+      "type1": "string",
+      "type2": "string"
+    }
+  },
+  {
+    "route": "/pokemon/{id}",
+    "is_route_dynamic": "true",
+    "method": "delete",
+    "request_body": "None",
+    "response": "None"
   }
 ]
