@@ -156,7 +156,32 @@ impl SpecialFunctions for AgentBackendDeveloper {
                         .stderr(Stdio::piped())
                         .output()
                         .expect("Failed to run Backend Application");
-                    self.attributes.state = AgentState::Finished;
+                    // Determine if build bug_errors
+                    if build_backend_server.status.success() {
+                        self.bug_count = 0;
+                        PrintCommand::UnitTest.print_agent_message(
+                            self.attributes.position.as_str(),
+                            "Backend Code Unit Testing: Test server build successfull..",
+                        );
+                        self.attributes.state = AgentState::Finished
+                    } else {
+                        let error_arr: Vec<u8> = build_backend_server.stderr;
+                        let error_str = String::from_utf8(error_arr).unwrap();
+                        self.bug_count += 1;
+                        self.bug_errors = Some(error_str);
+
+                        if self.bug_count > 3 {
+                            PrintCommand::Issue.print_agent_message(
+                                self.attributes.position.as_str(),
+                                "Backend Code Unit Testing: Too many bugs found in Code",
+                            );
+                            panic!("Error: Too many bugs")
+                        }
+                        // Pass back for rework
+                        self.attributes.state = AgentState::Working;
+                        continue;
+                    }
+                    // fixed the issue
                 }
                 _ => {
                     // Handle any other states if needed
