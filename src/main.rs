@@ -11,22 +11,14 @@ use crate::ai_functions::ai_func_architect::print_project_scope;
 use crate::ai_functions::ai_func_managing::convert_user_input_to_goal; // If it's from ai_func_architect
 use crate::helpers::command_line::get_user_response;
 use crate::helpers::general::*;
+use crate::models::agents_manager::managing_agent::ManagingAgent;
 #[tokio::main]
 async fn main() {
     let user_req = get_user_response("What WebServer are we building today !?");
-    let res = ai_task_request(
-        user_req,
-        "Managing Agent",
-        "Defining user requirements",
-        convert_user_input_to_goal,
-    )
-    .await;
-    let res2 = ai_task_request(
-        res.clone(),
-        "Solutions Architect",
-        "Finding Project Scope",
-        print_project_scope,
-    )
-    .await;
-    println!("{:#?}", res2);
+
+    let mut manage_agent: ManagingAgent = ManagingAgent::new(user_req)
+        .await
+        .expect("Error creating agent");
+
+    manage_agent.execute_project().await;
 }

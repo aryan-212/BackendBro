@@ -23,7 +23,7 @@ pub fn read_code_to_template_contents() -> String {
 pub fn read_exec_main_contents() -> String {
     fs::read_to_string(EXEC_MAIN_PATH).expect("Something went wrong, failed to read template")
 }
-fn extract_code_block(input: String) -> Option<String> {
+pub fn extract_code_block(input: String) -> Option<String> {
     // Find the first set of triple backticks (```).
     if let Some(start) = input.find("```") {
         // Find the second set of triple backticks (```), after the first one.

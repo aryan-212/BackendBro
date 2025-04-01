@@ -10,9 +10,11 @@ pub struct ProjectScope {
 }
 #[derive(Deserialize, Debug, Serialize, Clone, PartialEq)]
 pub struct RouteObject {
-    pub is_route_dynamic: bool,
-    pub method: serde_json::Value,
+    pub is_route_dynamic: String,
+    pub method: String,
     pub request_body: serde_json::Value,
+    pub response: serde_json::Value,
+    pub route: String,
 }
 #[derive(Deserialize, Debug, Serialize, Clone, PartialEq)]
 pub struct FactSheet {
