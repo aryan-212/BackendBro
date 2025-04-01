@@ -52,7 +52,9 @@ pub fn confirm_safe_code() -> bool {
         stdout.execute(SetForegroundColor(Color::Green)).unwrap();
         println!("[1] All Good");
         stdout.execute(SetForegroundColor(Color::Red)).unwrap();
-        println!("Let's stop this project");
+        println!("[2] Let's stop this project");
+        stdout.execute(ResetColor).unwrap();
+
         let mut human_response: String = String::new();
         stdin()
             .read_line(&mut human_response)

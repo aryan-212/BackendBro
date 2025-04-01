@@ -6,8 +6,8 @@
     "request_body": {
       "id": "number",
       "name": "string",
-      "type1": "string",
-      "type2": "string"
+      "types": "array",
+      "image_url": "string"
     },
     "response": "None"
   },
@@ -19,8 +19,8 @@
     "response": {
       "id": "number",
       "name": "string",
-      "type1": "string",
-      "type2": "string"
+      "types": "array",
+      "image_url": "string"
     }
   },
   {
@@ -30,8 +30,8 @@
     "request_body": {
       "id": "number",
       "name": "string",
-      "type1": "string",
-      "type2": "string"
+      "types": "array",
+      "image_url": "string"
     },
     "response": "None"
   },
@@ -43,8 +43,8 @@
     "response": {
       "id": "number",
       "name": "string",
-      "type1": "string",
-      "type2": "string"
+      "types": "array",
+      "image_url": "string"
     }
   },
   {
